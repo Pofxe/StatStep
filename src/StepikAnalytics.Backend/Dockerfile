@@ -1,22 +1,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy projects
-COPY ../StepikAnalytics.Shared/StepikAnalytics.Shared.csproj StepikAnalytics.Shared/
-COPY StepikAnalytics.Backend.csproj StepikAnalytics.Backend/
+# Copy project file for restore
+COPY src/StepikAnalytics.csproj StepikAnalytics/
 
 # Restore
-WORKDIR /src/StepikAnalytics.Backend
-RUN dotnet restore
+WORKDIR /src/StepikAnalytics
+RUN dotnet restore StepikAnalytics.csproj -f net10.0
 
 # Copy source
 WORKDIR /src
-COPY ../StepikAnalytics.Shared/ StepikAnalytics.Shared/
-COPY . StepikAnalytics.Backend/
+COPY src/ StepikAnalytics/
 
 # Build
-WORKDIR /src/StepikAnalytics.Backend
-RUN dotnet publish -c Release -o /app/publish
+WORKDIR /src/StepikAnalytics
+RUN dotnet publish StepikAnalytics.csproj -c Release -f net10.0 -o /app/publish
 
 # Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:10.0

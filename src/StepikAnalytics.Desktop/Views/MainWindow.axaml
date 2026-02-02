@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:StepikAnalytics.Desktop.ViewModels"
+        xmlns:views="using:StepikAnalytics.Desktop.Views"
+        x:Class="StepikAnalytics.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Stepik Analytics"
+        Width="1400" Height="900"
+        MinWidth="1200" MinHeight="700"
+        Background="{StaticResource BackgroundBrush}"
+        WindowStartupLocation="CenterScreen">
+    
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Inter, Segoe UI, sans-serif" />
+        </Style>
+    </Window.Styles>
+    
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PaperBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="24,16">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="📊" FontSize="24" Margin="0,0,12,0" />
+                    <TextBlock Text="Stepik Analytics" 
+                               FontSize="22" 
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}" />
+                </StackPanel>
+                
+                <StackPanel Grid.Column="2" 
+                            Orientation="Horizontal" 
+                            Spacing="16"
+                            IsVisible="{Binding IsAuthenticated}">
+                    <TextBlock Text="{Binding Username, StringFormat='👤 {0}'}"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondaryBrush}" />
+                    <Button Content="Выйти"
+                            Command="{Binding LogoutCommand}"
+                            Background="Transparent"
+                            Foreground="{StaticResource TextSecondaryBrush}"
+                            BorderThickness="0"
+                            Cursor="Hand" />
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Content -->
+        <ContentControl Grid.Row="1" Content="{Binding CurrentView}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:LoginViewModel">
+                    <views:LoginView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:CoursesViewModel">
+                    <views:CoursesView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:CourseDashboardViewModel">
+                    <views:CourseDashboardView />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+    </Grid>
+</Window>

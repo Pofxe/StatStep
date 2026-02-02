@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stepik-analytics-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: stepik_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stepik-network
+
+  backend:
+    build:
+      context: ../src/StepikAnalytics.Backend
+      dockerfile: Dockerfile
+    container_name: stepik-analytics-backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=stepik_analytics;Username=postgres;Password=postgres
+      - STEPIK_CLIENT_ID=${STEPIK_CLIENT_ID}
+      - STEPIK_CLIENT_SECRET=${STEPIK_CLIENT_SECRET}
+      - JWT_SECRET=${JWT_SECRET:-YourSuperSecretKeyHereMustBeAtLeast32CharactersLong!}
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - stepik-network
+
+volumes:
+  postgres_data:
+
+networks:
+  stepik-network:
+    driver: bridge

@@ -1,0 +1,239 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:StepikAnalytics.Desktop.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             x:Class="StepikAnalytics.Desktop.Views.CourseDashboardView"
+             x:DataType="vm:CourseDashboardViewModel">
+    
+    <ScrollViewer Background="{StaticResource BackgroundBrush}">
+        <StackPanel Margin="32" Spacing="24">
+            <!-- Header -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0"
+                        Content="← Назад"
+                        Command="{Binding GoBackCommand}"
+                        Background="Transparent"
+                        Foreground="{StaticResource TextSecondaryBrush}"
+                        BorderThickness="0"
+                        FontSize="14"
+                        Cursor="Hand"
+                        Margin="0,0,16,0" />
+                
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock Text="{Binding CourseTitle}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}" />
+                </StackPanel>
+                
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="16">
+                    <ComboBox ItemsSource="{Binding RangeOptions}"
+                              SelectedIndex="{Binding SelectedRangeIndex}"
+                              Width="120"
+                              Height="40"
+                              CornerRadius="8" />
+                    
+                    <CalendarDatePicker SelectedDate="{Binding AnchorDate}"
+                                        Width="160"
+                                        Height="40"
+                                        CornerRadius="8" />
+                    
+                    <Button Content="{Binding IsSyncing, Converter={x:Static BoolConverters.ToString}, ConverterParameter='Синхронизация...|Обновить данные'}"
+                            Command="{Binding SyncNowCommand}"
+                            IsEnabled="{Binding !IsSyncing}"
+                            Height="40"
+                            Padding="20,0"
+                            Background="{StaticResource PrimaryBrush}"
+                            Foreground="White"
+                            FontWeight="Medium"
+                            CornerRadius="8"
+                            Cursor="Hand" />
+                </StackPanel>
+            </Grid>
+            
+            <!-- Error message -->
+            <Border IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Background="#FEF2F2"
+                    BorderBrush="#FECACA"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,12">
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="#DC2626"
+                           FontSize="13" />
+            </Border>
+            
+            <!-- Loading state -->
+            <TextBlock Text="Загрузка данных..."
+                       IsVisible="{Binding IsLoading}"
+                       HorizontalAlignment="Center"
+                       FontSize="16"
+                       Foreground="{StaticResource TextSecondaryBrush}" />
+            
+            <!-- KPI Cards -->
+            <TextBlock Text="Основные показатели"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       IsVisible="{Binding Summary, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            
+            <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto" IsVisible="{Binding Summary, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <!-- Row 1 -->
+                <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Всего решений" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.TotalSubmissions}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBlock FontSize="12" Foreground="{StaticResource SuccessBrush}">
+                            <Run Text="Успешность: " />
+                            <Run Text="{Binding Summary.SubmissionSuccessRate, StringFormat={}{0:F1}%}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Row="0" Grid.Column="1" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Правильные решения" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.CorrectSubmissions}" FontSize="32" FontWeight="Bold" Foreground="#10B981" />
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Row="0" Grid.Column="2" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Неправильные решения" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.WrongSubmissions}" FontSize="32" FontWeight="Bold" Foreground="#EF4444" />
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Row="0" Grid.Column="3" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Новые ученики" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.NewLearners}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBlock FontSize="12">
+                            <TextBlock.Foreground>
+                                <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                    <Binding Path="Summary.NewLearnersChange" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                </MultiBinding>
+                            </TextBlock.Foreground>
+                            <Run Text="{Binding Summary.NewLearnersChangePercent, StringFormat={}{0:+0.0;-0.0;0}%}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Row 2 -->
+                <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Сертификаты" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.Certificates}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" />
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Отзывы" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.ReviewsCount}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBlock FontSize="12" Foreground="{StaticResource TextMutedBrush}">
+                            <Run Text="Средняя оценка: " />
+                            <Run Text="{Binding Summary.ReviewsAverage, StringFormat={}{0:F1}}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Рейтинг курса" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.RatingValue, StringFormat={}{0:F1}}" FontSize="32" FontWeight="Bold" Foreground="#F59E0B" />
+                        <TextBlock FontSize="12" Foreground="{StaticResource TextMutedBrush}">
+                            <Run Text="Δ " />
+                            <Run Text="{Binding Summary.RatingDelta, StringFormat={}{0:+0.00;-0.00;0}}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                
+                <Border Grid.Row="1" Grid.Column="3" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="DAU (активные)" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Summary.ActiveLearnersDau}" FontSize="32" FontWeight="Bold" Foreground="#3B82F6" />
+                        <TextBlock FontSize="12" Foreground="{StaticResource TextMutedBrush}">
+                            <Run Text="{Binding Summary.ActiveLearnersDauChangePercent, StringFormat={}{0:+0.0;-0.0;0}%}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <!-- Charts Section -->
+            <TextBlock Text="Графики"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       Margin="0,16,0,0" />
+            
+            <Grid ColumnDefinitions="*,*" RowDefinitions="300,300">
+                <!-- Submissions Chart -->
+                <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Решения задач" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                        <lvc:CartesianChart Series="{Binding SubmissionsSeries}" 
+                                            XAxes="{Binding XAxes}"
+                                            Height="200" />
+                    </StackPanel>
+                </Border>
+                
+                <!-- Learners Chart -->
+                <Border Grid.Row="0" Grid.Column="1" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Новые ученики" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                        <lvc:CartesianChart Series="{Binding LearnersSeries}" 
+                                            XAxes="{Binding XAxes}"
+                                            Height="200" />
+                    </StackPanel>
+                </Border>
+                
+                <!-- DAU Chart -->
+                <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" Margin="0,0,12,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Активные ученики (DAU)" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                        <lvc:CartesianChart Series="{Binding DauSeries}" 
+                                            XAxes="{Binding XAxes}"
+                                            Height="200" />
+                    </StackPanel>
+                </Border>
+                
+                <!-- Rating Chart -->
+                <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Рейтинг курса" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                        <lvc:CartesianChart Series="{Binding RatingSeries}" 
+                                            XAxes="{Binding XAxes}"
+                                            Height="200" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <!-- Sync Runs Table -->
+            <TextBlock Text="История синхронизаций"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       Margin="0,16,0,0" />
+            
+            <Border Background="{StaticResource PaperBrush}" CornerRadius="12" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <DataGrid ItemsSource="{Binding SyncRuns}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0"
+                          RowBackground="{StaticResource PaperBrush}"
+                          AlternatingRowBackground="{StaticResource SubtleBrush}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Время" Binding="{Binding StartedAt, StringFormat={}{0:dd.MM.yyyy HH:mm:ss}}" Width="160" />
+                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100" />
+                        <DataGridTextColumn Header="Длительность" Binding="{Binding Duration, StringFormat={}{0:mm\\:ss}}" Width="120" />
+                        <DataGridTextColumn Header="Загружено элементов" Binding="{Binding FetchedItemsCount}" Width="160" />
+                        <DataGridTextColumn Header="Ошибка" Binding="{Binding ErrorText}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

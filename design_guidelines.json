@@ -1,0 +1,150 @@
+{
+  "brand_identity": {
+    "name": "Stepik Analytics",
+    "mission": "Empower educators with crystal-clear insights into student performance.",
+    "archetype": "Swiss & High-Contrast (Authority, Clarity)",
+    "tone": "Professional, Encouraging, Precise",
+    "theme_mode": "light"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "monospace": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "scale": {
+      "h1": "text-4xl font-bold tracking-tight",
+      "h2": "text-3xl font-semibold tracking-tight",
+      "h3": "text-2xl font-semibold",
+      "h4": "text-xl font-medium",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm text-slate-500",
+      "tiny": "text-xs uppercase tracking-wider font-semibold text-slate-400"
+    }
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#10B981",
+      "foreground": "#FFFFFF",
+      "hover": "#059669",
+      "light": "#D1FAE5"
+    },
+    "secondary": {
+      "DEFAULT": "#3B82F6",
+      "foreground": "#FFFFFF",
+      "light": "#DBEAFE"
+    },
+    "background": {
+      "DEFAULT": "#F8FAFC",
+      "paper": "#FFFFFF",
+      "subtle": "#F1F5F9"
+    },
+    "text": {
+      "primary": "#0F172A",
+      "secondary": "#64748B",
+      "muted": "#94A3B8",
+      "inverted": "#FFFFFF"
+    },
+    "border": {
+      "DEFAULT": "#E2E8F0",
+      "focus": "#10B981"
+    },
+    "status": {
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "error": "#EF4444",
+      "info": "#3B82F6"
+    },
+    "charts": [
+      "#10B981",
+      "#3B82F6",
+      "#F59E0B",
+      "#EF4444",
+      "#8B5CF6",
+      "#EC4899"
+    ]
+  },
+  "spacing": {
+    "container_padding": "p-8 md:p-12",
+    "section_gap": "gap-8",
+    "item_gap": "gap-4",
+    "radius": {
+      "default": "rounded-xl",
+      "small": "rounded-lg",
+      "full": "rounded-full"
+    }
+  },
+  "layout_strategy": {
+    "dashboard_grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6",
+    "bento_grid": "grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 auto-rows-[minmax(180px,auto)]",
+    "sidebar_width": "w-64",
+    "max_width": "max-w-7xl mx-auto"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-white hover:bg-primary-hover shadow-sm rounded-lg px-4 py-2 font-medium transition-all active:scale-95",
+      "secondary": "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm rounded-lg px-4 py-2 font-medium transition-all active:scale-95",
+      "ghost": "bg-transparent text-slate-600 hover:bg-slate-100 rounded-lg px-4 py-2 font-medium transition-colors"
+    },
+    "cards": {
+      "default": "bg-white border border-slate-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200",
+      "kpi": "flex flex-col justify-between h-full bg-white border border-slate-200 rounded-xl p-6 shadow-sm relative overflow-hidden"
+    },
+    "inputs": {
+      "default": "flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": {
+      "soft": "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+      "hover": "0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)"
+    },
+    "glass": "bg-white/80 backdrop-blur-md border border-white/20 shadow-sm",
+    "gradients": {
+      "primary_fade": "bg-gradient-to-br from-emerald-50 to-transparent",
+      "subtle_glow": "bg-gradient-to-tr from-white via-slate-50 to-emerald-50/30"
+    }
+  },
+  "assets": {
+    "images": {
+      "login_cover": "https://images.unsplash.com/photo-1757737488977-fd42bc94659e?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "course_placeholder": "https://images.unsplash.com/photo-1757737488436-503bd810646d?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "user_avatar_default": "https://images.unsplash.com/photo-1575299833801-85ce40813bac?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "icons": "Lucide React (or Phosphor Icons for .NET)"
+  },
+  "implementation_notes": {
+    "avalonia_dotnet": {
+      "framework": "Avalonia UI (.NET 10)",
+      "pattern": "MVVM (Model-View-ViewModel)",
+      "styling": "Use App.axaml for global styles. Define ColorPalette in <Application.Resources>.",
+      "charts": "LiveCharts2 (Use CartesianChart for timelines, PieChart for distribution).",
+      "icons": "Material.Icons.Avalonia or similar package.",
+      "navigation": "SplitView or custom Sidebar navigation.",
+      "theme_enforcement": "Force Light Mode in AppBuilder."
+    },
+    "react_web_fallback": {
+      "framework": "React + Vite",
+      "styling": "Tailwind CSS",
+      "components": "Shadcn/UI",
+      "charts": "Recharts",
+      "icons": "lucide-react",
+      "state": "Zustand or React Context"
+    }
+  },
+  "universal_guidelines": [
+    "Always use the 'Manrope' font for headings to give a modern, technical feel.",
+    "Never use pure black (#000000). Use Slate-900 (#0F172A) for maximum contrast text.",
+    "KPI Cards must show a 'Trend' indicator (green up arrow, red down arrow) for metrics like DAU or Submissions.",
+    "Charts should be clean: remove grid lines if possible, or make them very subtle (slate-100).",
+    "Use 'Stepik Green' (#10B981) for primary actions and positive trends.",
+    "Ensure all interactive elements have a hover state (slightly darker bg or lifted shadow).",
+    "Padding is luxury. Don't cram content. Use p-6 or p-8 for cards."
+  ]
+}

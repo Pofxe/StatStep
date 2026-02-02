@@ -1,0 +1,189 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:StepikAnalytics.Desktop.ViewModels"
+             x:Class="StepikAnalytics.Desktop.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+    
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="480" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left side - decorative -->
+        <Border Grid.Column="0" Background="#10B981" Padding="48">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="📊" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,24" />
+                <TextBlock Text="Stepik Analytics"
+                           FontSize="36"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="Аналитика ваших курсов"
+                           FontSize="18"
+                           Foreground="#D1FAE5"
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0" />
+                <TextBlock Text="Собирайте статистику, анализируйте прогресс,&#x0a;развивайте свои курсы"
+                           FontSize="14"
+                           Foreground="#D1FAE5"
+                           Opacity="0.8"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           Margin="0,24,0,0" />
+            </StackPanel>
+        </Border>
+        
+        <!-- Right side - login form -->
+        <Border Grid.Column="1" Background="{StaticResource PaperBrush}" Padding="48">
+            <StackPanel VerticalAlignment="Center" Spacing="24" MaxWidth="360">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Вход в систему"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               IsVisible="{Binding !IsRegistering}" />
+                    <TextBlock Text="Регистрация"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               IsVisible="{Binding IsRegistering}" />
+                    <TextBlock Text="Введите данные для входа"
+                               FontSize="14"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               IsVisible="{Binding !IsRegistering}" />
+                    <TextBlock Text="Создайте аккаунт для начала работы"
+                               FontSize="14"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               IsVisible="{Binding IsRegistering}" />
+                </StackPanel>
+                
+                <!-- Error message -->
+                <Border IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        Background="#FEF2F2"
+                        BorderBrush="#FECACA"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16,12">
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="#DC2626"
+                               FontSize="13"
+                               TextWrapping="Wrap" />
+                </Border>
+                
+                <!-- Form fields -->
+                <StackPanel Spacing="16">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Имя пользователя" 
+                                   FontSize="13" 
+                                   FontWeight="Medium"
+                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Username}"
+                                 Watermark="Введите имя пользователя"
+                                 Height="44"
+                                 CornerRadius="8"
+                                 FontSize="14"
+                                 Padding="12,0" />
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="6" IsVisible="{Binding IsRegistering}">
+                        <TextBlock Text="Email (опционально)" 
+                                   FontSize="13" 
+                                   FontWeight="Medium"
+                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Email}"
+                                 Watermark="email@example.com"
+                                 Height="44"
+                                 CornerRadius="8"
+                                 FontSize="14"
+                                 Padding="12,0" />
+                    </StackPanel>
+                    
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Пароль" 
+                                   FontSize="13" 
+                                   FontWeight="Medium"
+                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Password}"
+                                 PasswordChar="•"
+                                 Watermark="Введите пароль"
+                                 Height="44"
+                                 CornerRadius="8"
+                                 FontSize="14"
+                                 Padding="12,0" />
+                    </StackPanel>
+                </StackPanel>
+                
+                <!-- Login button -->
+                <Button Command="{Binding LoginCommand}"
+                        IsVisible="{Binding !IsRegistering}"
+                        IsEnabled="{Binding !IsLoading}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Height="48"
+                        Background="{StaticResource PrimaryBrush}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        FontSize="15"
+                        CornerRadius="8"
+                        Cursor="Hand">
+                    <Panel>
+                        <TextBlock Text="Войти" IsVisible="{Binding !IsLoading}" />
+                        <TextBlock Text="Загрузка..." IsVisible="{Binding IsLoading}" />
+                    </Panel>
+                </Button>
+                
+                <!-- Register button -->
+                <Button Command="{Binding RegisterCommand}"
+                        IsVisible="{Binding IsRegistering}"
+                        IsEnabled="{Binding !IsLoading}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Height="48"
+                        Background="{StaticResource PrimaryBrush}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        FontSize="15"
+                        CornerRadius="8"
+                        Cursor="Hand">
+                    <Panel>
+                        <TextBlock Text="Зарегистрироваться" IsVisible="{Binding !IsLoading}" />
+                        <TextBlock Text="Загрузка..." IsVisible="{Binding IsLoading}" />
+                    </Panel>
+                </Button>
+                
+                <!-- Toggle mode -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                    <TextBlock Text="Нет аккаунта?"
+                               FontSize="13"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               IsVisible="{Binding !IsRegistering}" />
+                    <TextBlock Text="Уже есть аккаунт?"
+                               FontSize="13"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               IsVisible="{Binding IsRegistering}" />
+                    <Button Content="Зарегистрироваться"
+                            Command="{Binding ToggleModeCommand}"
+                            IsVisible="{Binding !IsRegistering}"
+                            Background="Transparent"
+                            Foreground="{StaticResource PrimaryBrush}"
+                            BorderThickness="0"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Padding="0"
+                            Cursor="Hand" />
+                    <Button Content="Войти"
+                            Command="{Binding ToggleModeCommand}"
+                            IsVisible="{Binding IsRegistering}"
+                            Background="Transparent"
+                            Foreground="{StaticResource PrimaryBrush}"
+                            BorderThickness="0"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Padding="0"
+                            Cursor="Hand" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

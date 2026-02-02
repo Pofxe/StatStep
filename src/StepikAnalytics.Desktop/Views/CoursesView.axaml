@@ -1,0 +1,162 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:StepikAnalytics.Desktop.ViewModels"
+             x:Class="StepikAnalytics.Desktop.Views.CoursesView"
+             x:DataType="vm:CoursesViewModel">
+    
+    <Grid Background="{StaticResource BackgroundBrush}" Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <TextBlock Text="Мои курсы"
+                       FontSize="32"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Добавьте курсы Stepik для отслеживания статистики"
+                       FontSize="15"
+                       Foreground="{StaticResource TextSecondaryBrush}" />
+        </StackPanel>
+        
+        <!-- Add course form -->
+        <Border Grid.Row="1"
+                Background="{StaticResource PaperBrush}"
+                CornerRadius="12"
+                Padding="24"
+                Margin="0,0,0,24"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1">
+            <StackPanel Spacing="16">
+                <TextBlock Text="Добавить курс"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+                
+                <Grid ColumnDefinitions="*,Auto" >
+                    <TextBox Grid.Column="0"
+                             Text="{Binding NewCourseInput}"
+                             Watermark="Введите ID курса или URL (https://stepik.org/course/12345)"
+                             Height="44"
+                             CornerRadius="8"
+                             FontSize="14"
+                             Padding="12,0"
+                             Margin="0,0,12,0" />
+                    <Button Grid.Column="1"
+                            Content="Добавить курс"
+                            Command="{Binding AddCourseCommand}"
+                            IsEnabled="{Binding !IsAddingCourse}"
+                            Height="44"
+                            Padding="24,0"
+                            Background="{StaticResource PrimaryBrush}"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            CornerRadius="8"
+                            Cursor="Hand" />
+                </Grid>
+                
+                <!-- Error message -->
+                <TextBlock Text="{Binding ErrorMessage}"
+                           IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Foreground="{StaticResource ErrorBrush}"
+                           FontSize="13" />
+            </StackPanel>
+        </Border>
+        
+        <!-- Courses list -->
+        <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="16">
+                <!-- Loading -->
+                <TextBlock Text="Загрузка..."
+                           IsVisible="{Binding IsLoading}"
+                           HorizontalAlignment="Center"
+                           FontSize="16"
+                           Foreground="{StaticResource TextSecondaryBrush}" />
+                
+                <!-- Empty state -->
+                <Border IsVisible="{Binding !Courses.Count}"
+                        Background="{StaticResource SubtleBrush}"
+                        CornerRadius="12"
+                        Padding="48"
+                        HorizontalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center" Spacing="12">
+                        <TextBlock Text="📚" FontSize="48" HorizontalAlignment="Center" />
+                        <TextBlock Text="Курсы не добавлены"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Добавьте первый курс, чтобы начать отслеживание"
+                                   FontSize="14"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+                
+                <!-- Courses -->
+                <ItemsControl ItemsSource="{Binding Courses}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource PaperBrush}"
+                                    CornerRadius="12"
+                                    Padding="20"
+                                    Margin="0,0,0,8"
+                                    BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1"
+                                    Cursor="Hand">
+                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                    <!-- Course info -->
+                                    <StackPanel Grid.Column="0" Spacing="8">
+                                        <TextBlock Text="{Binding Title}"
+                                                   FontSize="18"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                        <StackPanel Orientation="Horizontal" Spacing="16">
+                                            <TextBlock FontSize="13" Foreground="{StaticResource TextSecondaryBrush}">
+                                                <Run Text="ID: " />
+                                                <Run Text="{Binding StepikCourseId}" FontWeight="Medium" />
+                                            </TextBlock>
+                                            <TextBlock FontSize="13" Foreground="{StaticResource TextMutedBrush}">
+                                                <Run Text="Последний синк: " />
+                                                <Run Text="{Binding LastSync.LastSyncAt, StringFormat={}{0:dd.MM.yyyy HH:mm}}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    
+                                    <!-- Open button -->
+                                    <Button Grid.Column="1"
+                                            Content="Открыть дашборд"
+                                            Command="{Binding $parent[ItemsControl].((vm:CoursesViewModel)DataContext).SelectCourseCommand}"
+                                            CommandParameter="{Binding}"
+                                            Height="40"
+                                            Padding="20,0"
+                                            Background="{StaticResource PrimaryBrush}"
+                                            Foreground="White"
+                                            FontWeight="Medium"
+                                            CornerRadius="8"
+                                            Margin="16,0" />
+                                    
+                                    <!-- Delete button -->
+                                    <Button Grid.Column="2"
+                                            Content="✕"
+                                            Command="{Binding $parent[ItemsControl].((vm:CoursesViewModel)DataContext).DeleteCourseCommand}"
+                                            CommandParameter="{Binding Id}"
+                                            Width="40"
+                                            Height="40"
+                                            Background="Transparent"
+                                            Foreground="{StaticResource TextMutedBrush}"
+                                            FontSize="16"
+                                            CornerRadius="8"
+                                            ToolTip.Tip="Удалить курс" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
